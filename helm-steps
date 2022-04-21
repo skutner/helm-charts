@@ -1,0 +1,38 @@
+1. new-network (iot cluster) - creates blockchain node and generates genesis
+
+helm pl-plugin --newNetwork -i my-values.yaml -o .
+
+helm upgrade --install qn-0 pharmaledger-imi/quorum-node -f ./my-values.yaml --set-file use_case.newNetwork.plugin_data_common=./new-network.plugin.json,use_case.newNetwork.plugin_data_secrets=./new-network.plugin.secrets.json
+
+2. update load balancer address (iot cluster)
+
+helm upgrade --install qn-0 pharmaledger-imi/quorum-node -f ./my-values.yaml --set-file use_case.newNetwork.plugin_data_common=./new-network.plugin.json,use_case.newNetwork.plugin_data_secrets=./new-network.plugin.secrets.json
+
+
+3. join-network (eco cluster) - creates blockchain node and uses genesis generated in step 1
+
+helm pl-plugin --joinNetwork -i my-values.yaml -o .
+
+helm upgrade --install qn-0 pharmaledger-imi/quorum-node -f ./my-values.yaml --set-file use_case.joinNetwork.plugin_data_common=./join-network.plugin.json,use_case.joinNetwork.plugin_data_secrets=./join-network.plugin.secrets.json
+
+4. update load-balancer address (eco cluster)
+
+
+helm upgrade --install qn-0 pharmaledger-imi/quorum-node -f ./my-values.yaml --set-file use_case.joinNetwork.plugin_data_common=./join-network.plugin.json,use_case.joinNetwork.plugin_data_secrets=./join-network.plugin.secrets.json
+
+for multicluster repeat steps 3 and 4 for each cluster
+
+5. update-partners-info (eco cluster)
+
+helm pl-plugin --updatePartnersInfo -i my-values.yaml -o .
+
+helm upgrade --install qn-0 pharmaledger-imi/quorum-node -f ./my-values.yaml --set-file use_case.joinNetwork.plugin_data_common=./join-network.plugin.json,use_case.joinNetwork.plugin_data_secrets=./join-network.plugin.secrets.json,use_case.updatePartnersInfo.plugin_data_common=./update-partners-info.plugin.json
+
+
+6. update-partners-info (iot cluster)
+
+helm pl-plugin --updatePartnersInfo -i my-values.yaml -o .
+
+helm upgrade --install qn-0 pharmaledger-imi/quorum-node -f ./my-values.yaml --set-file use_case.newNetwork.plugin_data_common=./new-network.plugin.json,use_case.newNetwork.plugin_data_secrets=./new-network.plugin.secrets.json,use_case.updatePartnersInfo.plugin_data_common=./update-partners-info.plugin.json
+
+helm upgrade --install qn-0 pharmaledger-imi/ethadapter -f ./my-values.yaml --set-file config.pluginDataCommon=./eth-adapter.plugin.json,secrets.pluginDataSecrets=./orgAccount.json
